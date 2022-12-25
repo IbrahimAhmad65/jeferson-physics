@@ -1,0 +1,3 @@
+/home/ibrahim/CLionProjects/jeferson-physics/cmake-build-debug/CMakeFiles/phys2.dir
+/home/ibrahim/CLionProjects/jeferson-physics/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/ibrahim/CLionProjects/jeferson-physics/cmake-build-debug/CMakeFiles/rebuild_cache.dir
