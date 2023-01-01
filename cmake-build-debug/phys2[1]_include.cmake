@@ -1,0 +1,5 @@
+if(EXISTS "/home/ibrahim/CLionProjects/jeferson-physics/cmake-build-debug/phys2[1]_tests.cmake")
+  include("/home/ibrahim/CLionProjects/jeferson-physics/cmake-build-debug/phys2[1]_tests.cmake")
+else()
+  add_test(phys2_NOT_BUILT phys2_NOT_BUILT)
+endif()

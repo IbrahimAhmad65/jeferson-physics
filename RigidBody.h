@@ -7,10 +7,20 @@
 
 
 #include "Math/Vector2D.h"
+#include "Math/Vector3D.h"
 
 class RigidBody {
 public:
-    Vector2D getPos();
+    Vector3D getPos();
+    Vector3D getAngle();
+    Vector3D getVelocity();
+    Vector3D applyForce(Vector3D force, double t, Vector3D distanceFromCM);
+private:
+    Vector3D pos;
+    Vector3D angle;
+    Vector3D vel;
+    double m;
+    double I;
 };
 
 
