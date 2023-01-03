@@ -6,13 +6,31 @@
 #define PHYS2_VECTOR3D_H
 
 
+#include <ostream>
+
 class Vector3D {
 public:
     Vector3D operator+(Vector3D v) const;
+
     Vector3D operator-(Vector3D v) const;
+
     double operator*(Vector3D v) const;
+
     Vector3D operator*(double v) const;
 
+    Vector3D operator/(double v) const;
+
+    void operator+=(Vector3D v);
+
+    void operator-=(Vector3D v);
+
+    void operator*=(double v);
+    bool operator==(Vector3D v);
+
+
+    void operator/=(double v);
+
+    [[nodiscard]] std::string toString() const;
     bool updateMagsOnChange = false;
 
     Vector3D(double i, double j, double k);

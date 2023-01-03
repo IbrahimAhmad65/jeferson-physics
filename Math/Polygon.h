@@ -12,21 +12,32 @@
 class Polygon {
 public:
     Polygon(Vector3D* vector3D, int order);
-    Polygon(int order);
-    bool intersects(Polygon p);
-    void translate(Vector3D v);
-    int getOrder() const;
-    void rotateRodrigues(Vector3D axis, double theta);
+    bool intersects(const Polygon& p);
+    void translate(const Vector3D& v);
+    [[nodiscard]] int getOrder() const;
+    void rotateRodrigues(const Vector3D& axis, double theta);
     Vector3D* getPointList();
     void rotateEulerJ(double theta);
 
     void rotateEulerK(double theta);
 
     void rotateEulerI(double theta);
+
+    [[nodiscard]] Polygon clone() const;
 private:
     int order;
+    Vector3D center;
 
     Vector3D* pointPointer;
+};
+
+
+struct Point {
+    Vector3D pos;
+};
+
+struct line {
+    Point p1, p2;
 };
 
 

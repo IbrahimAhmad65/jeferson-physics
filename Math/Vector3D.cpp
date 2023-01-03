@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <cstdio>
+#include <string.h>
 
 Vector3D::Vector3D(double i, double j, double k) {
     this->i = i;
@@ -151,21 +152,21 @@ double Vector3D::getMagSquaredActual() const {
 }
 
 double Vector3D::getInverseRootMagActual() const {
-    double number = getMagSquaredActual();
-    long i;
-    float x2, y;
-    const float threehalfs = 1.5F;
-
-    x2 = number * 0.5F;
-    y = number;
-    i = *(long *) &y;
-    i = 0x5f3759df - (i >> 1);
-    y = *(float *) &i;
-    y = y * (threehalfs - (x2 * y * y));
-
-    return y;
-
     return 1.0 / getMagnitudeActual();
+//    double number = getMagSquaredActual();
+//    long i;
+//    float x2, y;
+//    const float threehalfs = 1.5F;
+//
+//    x2 = number * 0.5F;
+//    y = number;
+//    i = *(long *) &y;
+//    i = 0x5f3759df - (i >> 1);
+//    y = *(float *) &i;
+//    y = y * (threehalfs - (x2 * y * y));
+//
+//    return y;
+
 
 
 }
@@ -184,14 +185,14 @@ void Vector3D::forceUpdateLocal() {
     magSquare = getMagSquaredActual();
 }
 
-Vector3D Vector3D::operator+(Vector3D v) const{
+Vector3D Vector3D::operator+(Vector3D v) const {
     double a = i + v.i;
     double b = j + v.j;
     double c = k + v.k;
     return {a, b, c};
 }
 
-Vector3D Vector3D::operator-(Vector3D v) const{
+Vector3D Vector3D::operator-(Vector3D v) const {
     double a = i - v.i;
     double b = j - v.j;
     double c = k - v.k;
@@ -199,7 +200,8 @@ Vector3D Vector3D::operator-(Vector3D v) const{
 }
 
 double Vector3D::getAngleBetween(Vector3D v) {
-    return asin(dot(v) * v.getMagnitudeInverse() * getMagnitudeInverse());
+//    std::cout<< v.getMagnitudeInverse() << " jeremiah says hi "<<std::endl;
+    return acos(dot(v) * v.getMagnitudeInverse() * getMagnitudeInverse());
 }
 
 double Vector3D::operator*(Vector3D v) const {
@@ -207,8 +209,39 @@ double Vector3D::operator*(Vector3D v) const {
 }
 
 Vector3D Vector3D::operator*(double v) const {
-    return {i*v,j*v,k*v};
+    return {i * v, j * v, k * v};
 }
+
+void Vector3D::operator+=(Vector3D v) {
+    add(v);
+}
+
+void Vector3D::operator-=(Vector3D v) {
+    add(v.clone().scale(-1));
+}
+
+void Vector3D::operator*=(double v) {
+    scale(v);
+}
+
+void Vector3D::operator/=(double v) {
+    scale(1.0 / v);
+
+}
+
+Vector3D Vector3D::operator/(double v) const {
+    double div = 1.0 / v;
+    return {i * div, j * div, k * div};
+}
+
+std::string Vector3D::toString() const {
+    return "(" + std::to_string(i) + "," + std::to_string(j) + "," + std::to_string(k) + ")";
+}
+
+bool Vector3D::operator==(Vector3D v) {
+    return i == v.i && j == v.j && k == v.k;
+}
+
 
 double performanceExec() {
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);

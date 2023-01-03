@@ -32,5 +32,6 @@ bool VectorPerformanceTest::test() {
                         start.tv_sec - start.tv_usec / 1e6; // in seconds
 
     printf("time program took %f seconds to execute: ", time_taken);
+    std::cout << std::endl;
     return time_taken < 1;
 }
