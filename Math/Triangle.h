@@ -11,39 +11,29 @@
 
 class Triangle {
 public:
-
-    Triangle(Vector3D p1, Vector3D p2, Vector3D p3);
-
-    // Only here to do arr initialization dot ever use himo in future
+    explicit Triangle(Vector3D* vector3D);
     Triangle();
+    Triangle(const Vector3D& p1, const Vector3D& p2, const Vector3D& p3);
 
-    bool intersects(const Triangle &p);
-
-    void translate(const Vector3D &v);
-
-    // Rotates about origin not geometric COM
-    void rotateRodrigues(const Vector3D &axis, double theta);
-
-    [[nodiscard]] Vector3D *getPointList() const;
-
+    bool intersects(const Triangle& p);
+    void translate(const Vector3D& v);
+    [[nodiscard]] int getOrder() const;
+    void rotateRodrigues(const Vector3D& axis, double theta);
+    Vector3D* getPointList();
     void rotateEulerJ(double theta);
 
     void rotateEulerK(double theta);
 
-    void rotateEulerI(double theta);
-
-    [[nodiscard]] Triangle clone() const;
-
     [[nodiscard]] std::string toString() const;
 
+    void rotateEulerI(double theta);
+    [[nodiscard]] Triangle clone() const;
 private:
     int order = 3;
+
     Vector3D center;
 
-    Vector3D p1;
-    Vector3D p2;
-    Vector3D p3;
-
+    Vector3D* pointPointer{};
 };
 
 

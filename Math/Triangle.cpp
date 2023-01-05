@@ -91,26 +91,68 @@ bool checkInside(Point poly[], int n, Point p) {
     return count & 1;
 }
 
-Triangle::Triangle() {
-
+Triangle::Triangle(Vector3D *vector3D) {
+    this->pointPointer = vector3D;
+    this->center = Vector3D();
+    for (int i = 0; i < order; ++i) {
+        center += pointPointer[i];
+    }
+    center /= order;
 }
 
-// takes this long for both sided check 0.000036453508
+Triangle::Triangle(const Vector3D& p0, const Vector3D& p1, const Vector3D& p2) {
+    pointPointer = new Vector3D[3];
+    pointPointer[0] = p0.clone();
+    pointPointer[1] = p1.clone();
+    pointPointer[2] = p2.clone();
+
+    this->center = Vector3D();
+    for (int i = 0; i < order; ++i) {
+        center += pointPointer[i];
+    }
+    center /= order;
+}
+
+// takes this long for both sided check 0.000036453508 for triangle
 bool Triangle::intersects(const Triangle &p) {
-    Vector3D p0Local = getPointList()[0].clone();
-    Vector3D p1Local = getPointList()[1].clone();
-    Vector3D p2Local = getPointList()[2].clone();
-    p1Local.add(p0Local.clone().scale(-1));
-    p2Local.add(p0Local.clone().scale(-1));
-    Vector3D pCrossP = p1Local.cross(p2Local);
-    auto *intersectionPoints = new Vector3D[3 - 1];
-    for (int i = 0; i < 3 - 1; ++i) {
-        Vector3D la = p.getPointList()[0].clone();
-        Vector3D lab = la.clone() - p.getPointList()[i + 1];
+    Vector3D p0 = pointPointer[0].clone();
+    Vector3D p1 = pointPointer[1].clone();
+    Vector3D p2 = pointPointer[2].clone();
+    p1.add(p0.clone().scale(-1));
+    p2.add(p0.clone().scale(-1));
+    Vector3D pCrossP = p1.cross(p2);
+    Vector3D themp0 = p.pointPointer[0].clone();
+    Vector3D themp1 = p.pointPointer[1].clone();
+    Vector3D themp2 = p.pointPointer[2].clone();
+    themp1.add(themp0.clone().scale(-1));
+    themp2.add(themp0.clone().scale(-1));
+    Vector3D themNormal = themp1.cross(themp2);
+    Triangle newP = p.clone();
+    if((themNormal.cross(pCrossP).getMagnitude()) < .001){
+        return false;
+    }
+    if(std::abs(themNormal.dot(pCrossP)) < .001){
+        newP.rotateEulerJ(.001);
+        newP.rotateEulerI(.001);
+        newP.rotateEulerJ(.001);
+        themp0 = newP.pointPointer[0].clone();
+        themp1 = newP.pointPointer[1].clone();
+        themp2 = newP.pointPointer[2].clone();
+        themp1.add(themp0.clone().scale(-1));
+        themp2.add(themp0.clone().scale(-1));
+        themNormal = themp1.cross(themp2);
+    }
+
+
+
+    auto *intersectionPoints = new Vector3D[newP.getOrder() - 1];
+    for (int i = 0; i < newP.getOrder() - 1; ++i) {
+        Vector3D la = newP.pointPointer[0].clone();
+        Vector3D lab = la.clone() - newP.pointPointer[i + 1];
 
         Vector3D minusLab = lab.clone().scale(-1);
         double denom = minusLab.dot(pCrossP);
-        double t = pCrossP.clone().dot(la - p0Local) / denom;
+        double t = pCrossP.clone().dot(la - p0) / denom;
         if (denom > 0) {
             intersectionPoints[i] = la + lab * t;
         } else {
@@ -119,26 +161,36 @@ bool Triangle::intersects(const Triangle &p) {
         }
     }
     Triangle usClone = clone();
-    Vector3D normal = p1Local.cross(p2Local);
+    p0 = pointPointer[0].clone();
+    p1 = pointPointer[1].clone();
+    p2 = pointPointer[2].clone();
+    p1.add(p0.clone().scale(-1));
+    p2.add(p0.clone().scale(-1));
+    Vector3D normal = p1.cross(p2);
+
+
     Vector3D k = Vector3D(0, 0, 1);
     normal.copy(normal.cross(k));
     usClone.rotateRodrigues(normal, -normal.getAngleBetween(k));
-    auto* polygon = new Point[p.order];
-    for (int i = 0; i < 3; ++i) {
-        polygon[i] = Point{usClone.getPointList()[i]};
+    auto* polygon = new Point[newP.order];
+    for (int i = 0; i < newP.getOrder(); ++i) {
+        polygon[i] = Point{newP.pointPointer[i].clone()};
     }
-    for (int i = 0; i < 3; ++i) {
+    auto* polygon2 = new Point[newP.order];
+    for (int i = 0; i < newP.getOrder(); ++i) {
+        polygon2[i] = Point{usClone.pointPointer[i].clone()};
+    }
+    for (int i = 0; i < newP.getOrder(); ++i) {
         Vector3D v = intersectionPoints[i];
         if(!(std::isnan(v.getI()) || std::isnan(v.getJ()) || std::isnan(v.getK()))){
             v.rotateAboutAxisRodrigues(normal, -normal.getAngleBetween(k));
             Point point = {v};
-            if(checkInside(polygon,3,point)){
+            if(checkInside(polygon,newP.getOrder(),point) && checkInside(polygon2,newP.getOrder(),point) ){
                 return true;
             }
         }
     }
     return false;
-
 
 
     //broooooooooooooooooooooooh
@@ -165,11 +217,11 @@ bool Triangle::intersects(const Triangle &p) {
 //    translate(pointPointer[0].clone().scale(-1));
 //
 //    double angleBetweenFirst = pointPointer[0].getAngleBetween(Vector3D(1,0,0));
-//    p.rotateEulerIAboutCom(-angleBetweenFirst);
-//    rotateEulerIAboutCom(-angleBetweenFirst);
+//    p.rotateEulerI(-angleBetweenFirst);
+//    rotateEulerI(-angleBetweenFirst);
 //    angleBetweenFirst = pointPointer[0].getAngleBetween(Vector3D(0,1,0));
-//    p.rotateEulerIAboutCom(-angleBetweenFirst);
-//    rotateEulerIAboutCom(-angleBetweenFirst);
+//    p.rotateEulerI(-angleBetweenFirst);
+//    rotateEulerI(-angleBetweenFirst);
 //    bool both = false;
 //    int temp = 0;
 //    if(p.pointPointer[0].getK() < 0){
@@ -225,65 +277,59 @@ bool Triangle::intersects(const Triangle &p) {
     return false;
 }
 
-
 void Triangle::translate(const Vector3D &v) {
-    p1+=v;
-    p2+=v;
-    p3+=v;
+    for (int i = 0; i < order; ++i) {
+        pointPointer[i].add(v);
+    }
+}
+
+int Triangle::getOrder() const {
+    return order;
 }
 
 void Triangle::rotateRodrigues(const Vector3D &axis, double theta) {
-    p1.rotateAboutAxisRodrigues(axis,theta);
-    p2.rotateAboutAxisRodrigues(axis,theta);
-    p3.rotateAboutAxisRodrigues(axis,theta);
+    for (int i = 0; i < order; ++i) {
+        pointPointer[i].rotateAboutAxisRodrigues(axis, theta);
+    }
 }
 
 void Triangle::rotateEulerI(double theta) {
-    p1.rotateAboutIEuler(theta);
-    p2.rotateAboutIEuler(theta);
-    p3.rotateAboutIEuler(theta);
+    for (int i = 0; i < order; ++i) {
+        pointPointer[i].rotateAboutIEuler(theta);
+    }
 }
 
 void Triangle::rotateEulerJ(double theta) {
-    p1.rotateAboutJEuler(theta);
-    p2.rotateAboutJEuler(theta);
-    p3.rotateAboutJEuler(theta);
+    for (int i = 0; i < order; ++i) {
+        pointPointer[i].rotateAboutJEuler(theta);
+    }
 }
 
 void Triangle::rotateEulerK(double theta) {
-    p1.rotateAboutKEuler(theta);
-    p2.rotateAboutKEuler(theta);
-    p3.rotateAboutKEuler(theta);
+    for (int i = 0; i < order; ++i) {
+        pointPointer[i].rotateAboutKEuler(theta);
+    }
 }
 
-Vector3D *Triangle::getPointList() const{
-    auto* pointPointer = new Vector3D[3];
-    pointPointer[0] = p1.clone();
-    pointPointer[1] = p2.clone();
-    pointPointer[2] = p3.clone();
+Vector3D *Triangle::getPointList() {
     return pointPointer;
 }
 
 Triangle Triangle::clone() const {
-    Vector3D p1Out = p1.clone();
-    Vector3D p2Out = p2.clone();
-    Vector3D p3Out = p3.clone();
-    return {p1Out, p2Out, p3Out};
+    auto *newPointer = new Vector3D[order];
+    for (int i = 0; i < order; ++i) {
+        newPointer[i] = pointPointer[i].clone();
+    }
+    return Triangle(newPointer);
 }
+
+Triangle::Triangle() = default;
 
 std::string Triangle::toString() const {
     std::string out = "";
-//    for (int i = 0; i < 3; ++i) {
-    out += p1.toString();
+    for (int i = 0; i < 3; ++i) {
+    out += pointPointer[i].toString();
     out += ", ";
-    out += p2.toString();
-    out += ", ";
-    out += p3.toString();
-    out += ", ";
-//    }
+    }
     return out;
-}
-
-Triangle::Triangle(Vector3D p1,Vector3D p2,Vector3D p3) {
-    this-> p1 = p1;
 }

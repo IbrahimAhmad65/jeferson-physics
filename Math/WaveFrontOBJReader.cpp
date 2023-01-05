@@ -63,7 +63,6 @@ Mesh WaveFrontOBJReader::read(const char *filename) {
         vert3 = Vector3D(vertices[faceIndex[i+2]].getI(), vertices[faceIndex[i+2]].getJ(),
                          vertices[faceIndex[i+2]].getK());
         triangle[i/3] = Triangle(vert1.clone(),vert2.clone(),vert3.clone());
-        std::cout<< i/3 << " " << faceIndex.size()/3 << " " << triangle[i/3].toString()<< std::endl;
     }
     return {triangle, 3, static_cast<int>(faceIndex.size())/3};
 }

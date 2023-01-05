@@ -14,7 +14,6 @@ Mesh::Mesh(Triangle *p, double density, int numOfFaces) {
     this->faces = new Triangle[numOfFaces];
     for (int i = 0; i < numOfFaces; ++i) {
         this->faces[i] = p[i].clone();
-        std::cout << p[i].toString() <<" meeemoooo " << std::endl;
     }
 
     for (int i = 0; i < numOfFaces; i++) {
@@ -90,7 +89,10 @@ Mesh::Mesh(double mass, Triangle *p, int numOfFaces) {
     boundingBox = new Vector3D[8];
     Vector3D max = Vector3D(-2e307, -2e307, -2e307);
     Vector3D min = Vector3D(2e307, 2e307, 2e307);
-
+    this->faces = new Triangle[numOfFaces];
+    for (int i = 0; i < numOfFaces; ++i) {
+        this->faces[i] = p[i].clone();
+    }
     for (int i = 0; i < numOfFaces; i++) {
         // can be optimized with point duplicate deletion about 3x faster
         maxX = std::max(max.getI(), p[i].getPointList()[0].getI());
@@ -146,10 +148,6 @@ Mesh::Mesh(double mass, Triangle *p, int numOfFaces) {
     boundingBox[7] = {minX, maxY, maxZ};
 
     this->volume = totalVolume;
-    this->faces = new Triangle[numOfFaces];
-    for (int i = 0; i < numOfFaces; ++i) {
-        this->faces[i] = p[i].clone();
-    }
     this->velocity = Vector3D();
     this->angularVelocityRodrigues = Vector3D();
     this->numOfFaces = numOfFaces;
@@ -163,17 +161,10 @@ Mesh::Mesh(double mass, Triangle *p, int numOfFaces) {
 }
 
 bool Mesh::collidedWith(const Mesh &m) const {
-//    for (int i = 0; i < numOfFaces; ++i) {
-//        std::cout << faces[i].toString() << std::endl;
-//    }
-//    for (int i = 0; i < m.numOfFaces; ++i) {
-//        std::cout << m.faces[i].toString() << std::endl;
-//    }
 
 
     if ((geomCenter - m.geomCenter).getMagnitude() < rOfBounds + m.rOfBounds) {
-        std::cout << "Seems geom check passed " << rOfBounds << " " << m.rOfBounds << " "
-                  << (geomCenter - m.geomCenter).toString() << std::endl;
+
         for (int i = 0; i < numOfFaces; ++i) {
             for (int j = 0; j < m.getNumOfFaces(); ++j) {
                 // if are close enough
@@ -181,7 +172,6 @@ bool Mesh::collidedWith(const Mesh &m) const {
 //                std::cout << "m: "<< m.faces[j].getPointList()[0].toString() << " " << m.faces[j].getPointList()[1].toString() << " " << m.faces[j].getPointList()[2].toString()  << std::endl;
 //                std::cout << "me: "<< faces[i].getPointList()[0].toString() << " " << faces[i].getPointList()[1].toString() << " " << faces[i].getPointList()[2].toString()  << std::endl;
                 if (m.faces[j].intersects(faces[i]) || faces[i].intersects(m.faces[j])) {
-                    std::cout << "m.faces " << m.faces[j].toString() << " us.faces: " << faces[i].toString() <<  std::endl;
                     return true;
                 }
             }
