@@ -73,6 +73,8 @@ public:
 
     double getAngleBetween(Vector3D v);
 
+    Vector3D setIJK(double i, double j, double k );
+
 private:
     [[nodiscard]] double getMagnitudeActual() const;
 
