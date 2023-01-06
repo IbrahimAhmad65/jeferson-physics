@@ -31,8 +31,8 @@ int main() {
 
 
 
+    mD.translate({2.1,.1,.1});
     for (int i = 0; i < 3000000; ++i) {
-        mD.translate({2.1,.1,.1});
         a = m.collidedWith(mD) ;
     }
 

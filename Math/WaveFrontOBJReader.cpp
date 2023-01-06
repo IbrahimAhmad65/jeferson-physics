@@ -18,9 +18,11 @@ Mesh WaveFrontOBJReader::read(const char *filename) {
         exit(1);
 
     }
+    bool o = false;
     std::string line;
     while (std::getline(in, line)) {
         //check v for vertices
+
         if (line.substr(0, 2) == "v ") {
             std::istringstream v(line.substr(2));
             Vector3D vert;
@@ -49,6 +51,12 @@ Mesh WaveFrontOBJReader::read(const char *filename) {
             faceIndex.push_back(a);
             faceIndex.push_back(b);
             faceIndex.push_back(c);
+        }else if(line.substr(0, 2) == "o "){
+            if(!o){
+                o = true;
+            }else{
+                break;
+            }
         }
 
     }

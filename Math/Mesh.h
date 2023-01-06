@@ -11,9 +11,11 @@
 
 class Mesh {
 public:
-    Mesh(Triangle *p, double density, int numOfFaces);
+    explicit Mesh();
 
-    Mesh(double mass, Triangle *p, int numOfFaces);
+    Mesh(Triangle *p, double density, int numOfFaces, int id);
+
+    Mesh(double mass, Triangle *p, int numOfFaces, int id);
 
     // actually two sided
     bool collidedWith(const Mesh &m) const;
@@ -50,19 +52,22 @@ public:
 
     Vector3D getGeomCenter();
 
+    void setID(int id);
 private:
-    Vector3D *boundingBox;
-    Triangle *faces;
+    int id{};
+    Vector3D *boundingBox{};
+    Triangle *faces{};
     Vector3D velocity;
     Vector3D angularVelocityRodrigues;
-    int numOfFaces;
-    double density;
-    double mass;
-    double momentOfInertia;
+    int numOfFaces{};
+    double density{};
+    double mass{};
+    double momentOfInertia{};
     Vector3D axisOfMOI;
     Vector3D com;
-    double volume;
-    double rOfBounds;
+    double volume{};
+
+    double rOfBounds{};
 
     Vector3D geomCenter;
 };

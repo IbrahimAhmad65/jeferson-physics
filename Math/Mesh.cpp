@@ -5,7 +5,8 @@
 #include <iostream>
 #include "Mesh.h"
 
-Mesh::Mesh(Triangle *p, double density, int numOfFaces) {
+// better one lol
+Mesh::Mesh(Triangle *p, double density, int numOfFaces, int id) {
     double totalVolume = 0, currentVolume;
     double xCenter = 0, yCenter = 0, zCenter = 0, maxX, maxY, maxZ, minX, minY, minZ;
     boundingBox = new Vector3D[8];
@@ -83,7 +84,7 @@ Mesh::Mesh(Triangle *p, double density, int numOfFaces) {
     geomCenter = (max + min) * .5;
 }
 
-Mesh::Mesh(double mass, Triangle *p, int numOfFaces) {
+Mesh::Mesh(double mass, Triangle *p, int numOfFaces, int id) {
     double totalVolume = 0, currentVolume;
     double xCenter = 0, yCenter = 0, zCenter = 0, maxX, maxY, maxZ, minX, minY, minZ;
     boundingBox = new Vector3D[8];
@@ -243,7 +244,7 @@ Mesh Mesh::clone() const {
     for (int i = 0; i < numOfFaces; ++i) {
         newPointer[i] = faces[i].clone();
     }
-    return {mass, newPointer, numOfFaces};
+    return {mass, newPointer, numOfFaces,id};
 }
 
 void Mesh::applyForce(const Vector3D f, double time, const Vector3D &globalPos) {
@@ -282,3 +283,9 @@ void Mesh::rotateRodriguesAboutGEOMCenter(const Vector3D &axis, double theta) co
 Vector3D Mesh::getGeomCenter() {
     return geomCenter;
 }
+
+void Mesh::setID(const int id) {
+    this->id = id;
+}
+
+Mesh::Mesh() = default;

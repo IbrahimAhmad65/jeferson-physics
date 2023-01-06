@@ -10,7 +10,7 @@
 
 class WaveFrontOBJReader {
 public:
-    Mesh read( const char * filename);
+    static Mesh read( const char * filename);
 };
 
 

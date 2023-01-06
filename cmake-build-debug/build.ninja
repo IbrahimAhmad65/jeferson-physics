@@ -121,6 +121,12 @@ build CMakeFiles/phys2.dir/Math/WaveFrontOBJReader.cpp.o: CXX_COMPILER__phys2_De
   OBJECT_DIR = CMakeFiles/phys2.dir
   OBJECT_FILE_DIR = CMakeFiles/phys2.dir/Math
 
+build CMakeFiles/phys2.dir/Math/ClassicalMechanics.cpp.o: CXX_COMPILER__phys2_Debug /home/ibrahim/CLionProjects/jeferson-physics/Math/ClassicalMechanics.cpp || cmake_object_order_depends_target_phys2
+  DEP_FILE = CMakeFiles/phys2.dir/Math/ClassicalMechanics.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles/phys2.dir
+  OBJECT_FILE_DIR = CMakeFiles/phys2.dir/Math
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target phys2
@@ -129,7 +135,7 @@ build CMakeFiles/phys2.dir/Math/WaveFrontOBJReader.cpp.o: CXX_COMPILER__phys2_De
 #############################################
 # Link the executable phys2
 
-build phys2: CXX_EXECUTABLE_LINKER__phys2_Debug CMakeFiles/phys2.dir/main.cpp.o CMakeFiles/phys2.dir/RigidBody.cpp.o CMakeFiles/phys2.dir/Math/Vector2D.cpp.o CMakeFiles/phys2.dir/Math/Vector3D.cpp.o CMakeFiles/phys2.dir/Math/Mesh.cpp.o CMakeFiles/phys2.dir/Math/Triangle.cpp.o CMakeFiles/phys2.dir/Tests/VectorPerformanceTest.cpp.o CMakeFiles/phys2.dir/Tests/Test.cpp.o CMakeFiles/phys2.dir/Math/Matrix.cpp.o CMakeFiles/phys2.dir/Math/NewMatrix.cpp.o CMakeFiles/phys2.dir/Math/Line3D.cpp.o CMakeFiles/phys2.dir/Math/WaveFrontOBJReader.cpp.o
+build phys2: CXX_EXECUTABLE_LINKER__phys2_Debug CMakeFiles/phys2.dir/main.cpp.o CMakeFiles/phys2.dir/RigidBody.cpp.o CMakeFiles/phys2.dir/Math/Vector2D.cpp.o CMakeFiles/phys2.dir/Math/Vector3D.cpp.o CMakeFiles/phys2.dir/Math/Mesh.cpp.o CMakeFiles/phys2.dir/Math/Triangle.cpp.o CMakeFiles/phys2.dir/Tests/VectorPerformanceTest.cpp.o CMakeFiles/phys2.dir/Tests/Test.cpp.o CMakeFiles/phys2.dir/Math/Matrix.cpp.o CMakeFiles/phys2.dir/Math/NewMatrix.cpp.o CMakeFiles/phys2.dir/Math/Line3D.cpp.o CMakeFiles/phys2.dir/Math/WaveFrontOBJReader.cpp.o CMakeFiles/phys2.dir/Math/ClassicalMechanics.cpp.o
   FLAGS = -g
   OBJECT_DIR = CMakeFiles/phys2.dir
   POST_BUILD = :
