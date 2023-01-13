@@ -15,7 +15,7 @@ public:
     Triangle();
     Triangle(const Vector3D& p1, const Vector3D& p2, const Vector3D& p3);
 
-    bool intersects(const Triangle& p);
+    Vector3D intersects(const Triangle& p);
     void translate(const Vector3D& v);
     [[nodiscard]] int getOrder() const;
     void rotateRodrigues(const Vector3D& axis, double theta);

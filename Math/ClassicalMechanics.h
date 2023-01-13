@@ -7,22 +7,29 @@
 
 
 #include "Mesh.h"
-
+struct IDVectorCouple{
+    std::vector<Vector3D> intersectionPoint;
+    int interSectionPointSize;
+    int id;
+};
 class ClassicalMechanics {
 public:
     ClassicalMechanics(Mesh* meshes, int numMeshes);
     void stepForward(double timeStep);
 private:
-    void tickLocalPost(double newTime);
+    void resetPostTickMeshes();
     long currentTime = 0e0;
-    [[nodiscard]] std::vector<int> meshesThatHaveCollided() const;
+    [[nodiscard]] std::vector<IDVectorCouple> meshesThatHaveCollided() const;
     Mesh* meshes;
     Mesh* meshesPostTick;
-    std::vector<Vector3D> forces;
+//    std::vector<Vector3D> forces;
     std::vector<Vector3D> torques;
-    std::vector<Vector3D> pointOfContact;
     int numMeshes;
+    long lastTimeStep = -1;
+    long localTimeStep = -1;
+    void stepForward(long timeStep);
 
+    void tickLocalPost(long timeStep);
 };
 
 

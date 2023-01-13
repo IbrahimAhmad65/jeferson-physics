@@ -1,16 +1,18 @@
 #include <iostream>
 #include <xmmintrin.h>
 #include <sys/time.h>
+#include <vector>
 #include "Math/Vector3D.h"
 #include "Math/Triangle.h"
 #include "Tests/VectorPerformanceTest.h"
 #include "Math/WaveFrontOBJReader.h"
+#include "Math/Matrix.h"
 
 
 int main() {
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
 
-    bool a = false;
+    std::vector<Vector3D> a;
     bool b = false;
     struct timeval start, end;
     WaveFrontOBJReader objReader = WaveFrontOBJReader();
@@ -29,12 +31,10 @@ int main() {
 //        b = them.intersects(usClone);
 //    }
 
-
-
-    mD.translate({2.1,.1,.1});
-    for (int i = 0; i < 3000000; ++i) {
-        a = m.collidedWith(mD) ;
-    }
+//    mD.translate({2.1,.1,.1});
+//    for (int i = 0; i < 3000000; ++i) {
+//        a = m.collidedWith(mD) ;
+//    }
 
 
 
@@ -45,7 +45,7 @@ int main() {
 
     printf("time program took %f seconds to execute: ", time_taken);
     std::cout << std::endl;
-    std::cout << a << std::endl;
+    std::cout << !a.empty() << std::endl;
     std::cout << b << std::endl;
 
     return 0;

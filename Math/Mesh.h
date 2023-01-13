@@ -8,6 +8,7 @@
 
 #include "Vector3D.h"
 #include "Triangle.h"
+#include <vector>
 
 class Mesh {
 public:
@@ -18,8 +19,9 @@ public:
     Mesh(double mass, Triangle *p, int numOfFaces, int id);
 
     // actually two sided
-    bool collidedWith(const Mesh &m) const;
+    std::vector<Vector3D> collidedWith(const Mesh &m) const;
 
+    Vector3D getVelocityOfLastTick();
     void translate(const Vector3D &v);
 
     [[nodiscard]] int getNumOfFaces() const;
@@ -40,11 +42,14 @@ public:
 
     [[nodiscard]] Mesh clone() const;
 
-    void applyForce(Vector3D f, double time, const Vector3D &globalPos);
-
     [[nodiscard]] Vector3D getCOM() const;
 
     [[nodiscard]] double getVolume() const;
+    Vector3D getVelocity();
+    Vector3D getAngularVelocityRodrigues();
+    void setVelocity(const Vector3D& v);
+    void setAngularVelocityRodrigues(const Vector3D& v);
+
 
 //    double computeMomentOfIntertia(const Vector3D& axis);
     // used until i stop being lazy. Ask mech for values lol
@@ -53,6 +58,11 @@ public:
     Vector3D getGeomCenter();
 
     void setID(int id);
+    void applyForce(const Vector3D f, long time, const Vector3D &globalPos);
+
+    void applyTorque(const Vector3D &torque, long time);
+
+    void updatePhysics(long time);
 private:
     int id{};
     Vector3D *boundingBox{};
@@ -65,6 +75,7 @@ private:
     double momentOfInertia{};
     Vector3D axisOfMOI;
     Vector3D com;
+    Vector3D velocityOfLastTick;
     double volume{};
 
     double rOfBounds{};

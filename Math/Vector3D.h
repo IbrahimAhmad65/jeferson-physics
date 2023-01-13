@@ -17,14 +17,21 @@ public:
     double operator*(Vector3D v) const;
 
     Vector3D operator*(double v) const;
+    Vector3D operator*(long v) const;
+
 
     Vector3D operator/(double v) const;
+    Vector3D operator/(long v) const;
+    Vector3D operator*(int v) const;
+    Vector3D operator/(int v) const;
+    bool isNan() const;
 
     void operator+=(Vector3D v);
 
     void operator-=(Vector3D v);
 
     void operator*=(double v);
+    void operator*=(long v);
     bool operator==(Vector3D v);
 
 
@@ -75,16 +82,18 @@ public:
 
     Vector3D setIJK(double i, double j, double k );
 
+    [[nodiscard]] bool isValid() const;
 private:
+
     [[nodiscard]] double getMagnitudeActual() const;
 
     [[nodiscard]] double getMagSquaredActual() const;
 
     [[nodiscard]] double getInverseRootMagActual() const;
-
     double i, j, k;
     double mag = getMagnitudeActual();
     double magInverse = getInverseRootMagActual();
+
     double magSquare = getMagSquaredActual();
 
     void forceUpdateLocal();

@@ -72,5 +72,5 @@ Mesh WaveFrontOBJReader::read(const char *filename) {
                          vertices[faceIndex[i+2]].getK());
         triangle[i/3] = Triangle(vert1.clone(),vert2.clone(),vert3.clone());
     }
-    return {triangle, 3, static_cast<int>(faceIndex.size())/3};
+    return {triangle, 3, static_cast<int>(faceIndex.size())/3,-1};
 }

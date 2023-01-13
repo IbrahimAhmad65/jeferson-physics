@@ -1,115 +1,44 @@
 //
 
-#include <iostream>
-#include <array>
+#include <valarray>
 #include "Matrix.h"
+
 
 
 //
 // Created by ibrahim on 12/31/22.
-Matrix::Matrix(double **data, int row, int col) {
-    this->data = data;
-    this->col = col;
-    this->row = row;
-}
-
-Matrix Matrix::T() {
-    const int m = row;
-    const int n = col;
-    auto **transposedMatrix = static_cast<double **>(malloc(sizeof(double) * row * col));;
-
-    if (transposedMatrix != nullptr) {
-        for (int x = 0; x < n; x++) {
-            for (int y = 0; y < m; y++) {
-                transposedMatrix[x][y] = data[y][x];
-            }
-        }
-    }
-    return {(transposedMatrix), col, row};
-}
-
-
-
-void Matrix::setData(double **data) {
+Matrix::Matrix(double *data, int row, int col) {
+    this->rowSize = row;
+    this->colSize = col;
     this->data = data;
 }
 
-double **Matrix::getData() {
-    return data;
+Matrix::Matrix(int row, int col) {
+    this->rowSize = row;
+    this->colSize = col;
+    data = new double [row*col];
 }
 
-//
-//Matrix Matrix::multiply(Matrix in) {
-//    int i, j, k;
-//    int row1 = row;
-//    int row2 = in.getRow();
-//    int col1 = col;
-//    int col2 = in.getCol();
-//    if (row1 != col2) {
-//        std::cout << "invalid dims" << std::endl;
-//    }
-//    double out[][] = new double[row1][col2];
-//    for (i = 0; i < row1; i++) {
-//        for (j = 0; j < col2; j++) {
-//            for (k = 0; k < row2; k++)
-//                out[i][j] += this.data[i][k] * in.data[k][j];
-//        }
-//    }
-//    return new Matrix(out);
-//}
-//
-//Matrix Matrix::add(Matrix in) {
-//    for (int i = 0; i < data.length; i++) {
-//        for (int j = 0; j < data[0].length; j++) {
-//            data[i][j] += in.data[i][j];
-//        }
-//    }
-//    return clone();
-//}
-//
-//
-//void Matrix::subtract(Matrix in) {
-//    for (int i = 0; i < data.length; i++) {
-//        for (int j = 0; j < data[0].length; j++) {
-//            data[i][j] += in.data[i][j];
-//        }
-//    }
-//}
-//
-//Matrix Matrix::scale(double scalar) {
-//    for (int i = 0; i < data.length; i++) {
-//        for (int j = 0; j < data[0].length; j++) {
-//            data[i][j] *= scalar;
-//        }
-//    }
-//    return clone();
-//}
-
-
-void Matrix::setRow(int row, double *rowData) {
-    data[row] = rowData;
-}
-
-
-double *solve(Matrix left, double *right) {
-    double **A = left.getData();
-    int N = left.getRow();
+double *Matrix::solve(double *right) {
+    int N = getRowSize();
     for (int k = 0; k < N; k++) {
         int max = k;
         for (int i = k + 1; i < N; i++) {
-            if (std::abs(A[i][k]) > std::abs(A[max][k])) { max = i; }
+            if (std::abs(get(max, k)) < std::abs(get(i, k))) {
+                max = i;
+            }
         }
-        double *temp = A[k];
-        A[k] = A[max];
-        A[max] = temp;
+        double *temp = getRow(k);
+        setRow(k, getRow(max));
+        setRow(max, temp);
         double t = right[k];
         right[k] = right[max];
         right[max] = t;
         for (int i = k + 1; i < N; i++) {
-            double factor = A[i][k] / A[k][k];
+            double factor = get(i, k) / get(k, k);
             right[i] -= factor * right[k];
             for (int j = k; j < N; j++) {
-                A[i][j] -= factor * A[k][j];
+                set(i,j,get(i,j)- factor * get(k,j));
             }
         }
     }
@@ -117,26 +46,44 @@ double *solve(Matrix left, double *right) {
     for (int i = N - 1; i >= 0; i--) {
         double sum = 0.0;
         for (int j = i + 1; j < N; j++) {
-            sum += A[i][j] * solution[j];
+            sum += get(i, j) * solution[j];
         }
-        solution[i] = (right[i] - sum) / A[i][i];
+        solution[i] = (right[i] - sum) / get(i, i);
     }
     return solution;
 }
 
-
-Matrix Matrix::clone() {
-    return {this->data, row, col};
+int Matrix::getRowSize() const {
+    return rowSize;
 }
 
-int Matrix::getMaxRank() {
-    return row > col ? col : row;
+int Matrix::getColSize() const {
+    return colSize;
 }
 
-int Matrix::getRow() {
-    return row;
+double Matrix::get(int row, int col) {
+    return data[row * colSize + col];
 }
 
-int Matrix::getCol() {
-    return col;
+double *Matrix::getRow(int row) {
+    auto *out = new double[colSize];
+    for (int i = 0; i < colSize; ++i) {
+        out[i] = data[row * colSize + i];
+    }
+    return out;
+}
+
+
+void * Matrix::setRow(int row, const double *rowData) {
+    for (int i = 0; i < colSize; ++i) {
+        data[row * colSize + i] = rowData[i];
+    }
+}
+
+double *Matrix::getData() {
+    return data;
+}
+
+void Matrix::set(int row, int col, double num) {
+    this->data[row * colSize + col] = num;
 }

@@ -7,44 +7,24 @@
 
 
 class Matrix {
-private:
-
-    double ** data;
-    int row;
-    int col;
 public:
-    int getRow();
-    int getCol();
-    Matrix(double** data, int row, int col);
-    Matrix T();
+    Matrix(double* data, int row, int col);
+    Matrix(int row, int col);
+    double* getData();
+    int getRowSize() const;
+    int getColSize() const;
+    double get(int row, int col);
+    double* solve(double* right);
+    double *getRow(int row);
+    void * setRow(int row, const double *rowData);
+    void set(int row, int col, double data);
 
-    void setData(double **data);
+private:
+    int rowSize;
 
-    double **getData();
+    int colSize;
 
-    void fill(double value);
-
-
-    void fill(double *value);
-
-    Matrix multiply(Matrix in);
-
-    Matrix add(Matrix in);
-
-    void subtract(Matrix in);
-
-    Matrix scale(double scalar);
-
-
-    int getMaxRank();
-
-    Matrix clone();
-
-    int getRank();
-
-    Matrix reducedRowEchelon();
-
-    void setRow(int row, double *rowData);
+    double* data;
 };
 
 

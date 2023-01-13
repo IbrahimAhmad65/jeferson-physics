@@ -16,6 +16,7 @@ Mesh::Mesh(Triangle *p, double density, int numOfFaces, int id) {
     for (int i = 0; i < numOfFaces; ++i) {
         this->faces[i] = p[i].clone();
     }
+    velocityOfLastTick =  Vector3D();
 
     for (int i = 0; i < numOfFaces; i++) {
         // can be optimized with point duplicate deletion about 3x faster
@@ -45,12 +46,18 @@ Mesh::Mesh(Triangle *p, double density, int numOfFaces, int id) {
         max.setIJK(maxX, maxY, maxZ);
         min.setIJK(minX, minY, minZ);
         totalVolume += currentVolume =
-                (faces[i].getPointList()[0].getI() * faces[i].getPointList()[1].getJ() * faces[i].getPointList()[2].getK() -
-                 faces[i].getPointList()[0].getI() * faces[i].getPointList()[2].getJ() * faces[i].getPointList()[1].getK() -
-                 faces[i].getPointList()[1].getI() * faces[i].getPointList()[0].getJ() * faces[i].getPointList()[2].getK() +
-                 faces[i].getPointList()[1].getI() * faces[i].getPointList()[2].getJ() * faces[i].getPointList()[0].getK() +
-                 faces[i].getPointList()[2].getI() * faces[i].getPointList()[0].getJ() * faces[i].getPointList()[1].getK() -
-                 faces[i].getPointList()[2].getI() * faces[i].getPointList()[1].getJ() * faces[i].getPointList()[0].getK()) / 6;
+                (faces[i].getPointList()[0].getI() * faces[i].getPointList()[1].getJ() *
+                 faces[i].getPointList()[2].getK() -
+                 faces[i].getPointList()[0].getI() * faces[i].getPointList()[2].getJ() *
+                 faces[i].getPointList()[1].getK() -
+                 faces[i].getPointList()[1].getI() * faces[i].getPointList()[0].getJ() *
+                 faces[i].getPointList()[2].getK() +
+                 faces[i].getPointList()[1].getI() * faces[i].getPointList()[2].getJ() *
+                 faces[i].getPointList()[0].getK() +
+                 faces[i].getPointList()[2].getI() * faces[i].getPointList()[0].getJ() *
+                 faces[i].getPointList()[1].getK() -
+                 faces[i].getPointList()[2].getI() * faces[i].getPointList()[1].getJ() *
+                 faces[i].getPointList()[0].getK()) / 6;
         xCenter +=
                 ((p[i].getPointList()[0].getI() + p[i].getPointList()[1].getI() + p[i].getPointList()[2].getI()) / 4) *
                 currentVolume;
@@ -161,25 +168,25 @@ Mesh::Mesh(double mass, Triangle *p, int numOfFaces, int id) {
     geomCenter = (max + min) * .5;
 }
 
-bool Mesh::collidedWith(const Mesh &m) const {
-
+std::vector<Vector3D> Mesh::collidedWith(const Mesh &m) const {
+    std::vector<Vector3D> out = std::vector<Vector3D>();
 
     if ((geomCenter - m.geomCenter).getMagnitude() < rOfBounds + m.rOfBounds) {
 
         for (int i = 0; i < numOfFaces; ++i) {
             for (int j = 0; j < m.getNumOfFaces(); ++j) {
-                // if are close enough
-//                std::cout << m.faces[j].intersects(faces[i]) << " " << faces[i].intersects(m.faces[j]) << std::endl;
-//                std::cout << "m: "<< m.faces[j].getPointList()[0].toString() << " " << m.faces[j].getPointList()[1].toString() << " " << m.faces[j].getPointList()[2].toString()  << std::endl;
-//                std::cout << "me: "<< faces[i].getPointList()[0].toString() << " " << faces[i].getPointList()[1].toString() << " " << faces[i].getPointList()[2].toString()  << std::endl;
-                if (m.faces[j].intersects(faces[i]) || faces[i].intersects(m.faces[j])) {
-                    return true;
+                Vector3D mj = m.faces[j].intersects(faces[i]);
+                Vector3D jm  = faces[i].intersects(m.faces[j]);
+                if(mj.isValid()){
+                    out.push_back(mj);
+                } else if(jm.isValid()){
+                    out.push_back(jm);
                 }
             }
         }
     }
 
-    return false;
+    return out;
 }
 
 void Mesh::translate(const Vector3D &v) {
@@ -244,10 +251,10 @@ Mesh Mesh::clone() const {
     for (int i = 0; i < numOfFaces; ++i) {
         newPointer[i] = faces[i].clone();
     }
-    return {mass, newPointer, numOfFaces,id};
+    return {mass, newPointer, numOfFaces, id};
 }
 
-void Mesh::applyForce(const Vector3D f, double time, const Vector3D &globalPos) {
+void Mesh::applyForce(const Vector3D f, long time, const Vector3D &globalPos) {
     Vector3D torque = (globalPos - com).cross(f);
     angularVelocityRodrigues += (torque / momentOfInertia * time);
     velocity += f * time;
@@ -286,6 +293,36 @@ Vector3D Mesh::getGeomCenter() {
 
 void Mesh::setID(const int id) {
     this->id = id;
+}
+
+void Mesh::applyTorque(const Vector3D &torque, long time) {
+    angularVelocityRodrigues += (torque / momentOfInertia * time);
+}
+
+Vector3D Mesh::getVelocity() {
+    return velocity;
+}
+
+Vector3D Mesh::getAngularVelocityRodrigues() {
+    return angularVelocityRodrigues;
+}
+
+void Mesh::setAngularVelocityRodrigues(const Vector3D &v) {
+    angularVelocityRodrigues = v.clone();
+}
+
+void Mesh::setVelocity(const Vector3D &v) {
+    velocity = v.clone();
+}
+
+void Mesh::updatePhysics(long time) {
+    velocityOfLastTick = velocity.clone();
+    translate(velocity * time);
+    rotateRodriguesAboutCOM(angularVelocityRodrigues, angularVelocityRodrigues.getMagnitude());
+}
+
+Vector3D Mesh::getVelocityOfLastTick() {
+    return velocityOfLastTick;
 }
 
 Mesh::Mesh() = default;

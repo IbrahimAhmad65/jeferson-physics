@@ -56,14 +56,14 @@ Vector3D Vector3D::scale(double scalar) {
     this->j *= scalar;
     this->k *= scalar;
     updateLocal();
-        return *this;
+    return *this;
 }
 
 Vector3D Vector3D::rotateAboutIEuler(double theta) {
     j = j * std::cos(theta) - k * std::sin(theta);
     k = j * std::sin(theta) + k * std::cos(theta);
     updateLocal();
-        return *this;
+    return *this;
 
 }
 
@@ -72,7 +72,7 @@ Vector3D Vector3D::rotateAboutJEuler(double theta) {
     i = i * std::cos(theta) + k * std::sin(theta);
     k = -i * std::sin(theta) + k * std::cos(theta);
     updateLocal();
-        return *this;
+    return *this;
 
 }
 
@@ -80,7 +80,7 @@ Vector3D Vector3D::rotateAboutKEuler(double theta) {
     i = i * std::cos(theta) - j * std::sin(theta);
     j = i * std::sin(theta) + j * std::cos(theta);
     updateLocal();
-        return *this;
+    return *this;
 
 }
 
@@ -97,7 +97,7 @@ Vector3D Vector3D::rotateAboutAxisRodrigues(Vector3D axis, double theta) {
     p1.add(normalizedAxis);
     copy(p1);
     updateLocal();
-        return *this;
+    return *this;
 
 }
 
@@ -119,7 +119,7 @@ Vector3D Vector3D::add(const Vector3D &rightSide) {
     this->i += rightSide.getI();
     this->j += rightSide.getJ();
     this->k += rightSide.getK();
-        return *this;
+    return *this;
 }
 
 double Vector3D::getMagnitudeActual() const {
@@ -243,11 +243,43 @@ bool Vector3D::operator==(Vector3D v) {
 }
 
 Vector3D Vector3D::setIJK(double i, double j, double k) {
-    this-> i = i;
-    this-> j = j;
-    this-> k = k;
+    this->i = i;
+    this->j = j;
+    this->k = k;
     return *this;
 }
+
+Vector3D Vector3D::operator*(long v) const {
+    auto vMe = (double) v;
+    return *this * vMe;
+}
+
+Vector3D Vector3D::operator/(long v) const {
+    auto vMe = (double) v;
+    return *this / vMe;
+}
+
+void Vector3D::operator*=(long v) {
+    auto vMe = (double) v;
+    *this *= vMe;
+}
+
+Vector3D Vector3D::operator*(int v) const {
+    auto vMe = (double) v;
+    return *this * vMe;
+}
+
+Vector3D Vector3D::operator/(int v) const {
+    auto vMe = (double) v;
+    return *this / vMe;
+}
+
+bool Vector3D::isNan() const {
+    return std::isnan(getI()) || std::isnan(getJ()) || std::isnan(getK());
+}
+bool Vector3D::isValid() const{
+    return !isNan();
+};
 
 
 double performanceExec() {
